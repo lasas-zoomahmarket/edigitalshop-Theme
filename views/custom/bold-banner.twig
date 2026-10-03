@@ -1,0 +1,16 @@
+{% if content['settings']['image'] %}
+    {% set showIt = true %}
+    {% if content['settings']['start_date'] and content['settings']['start_date'] != '' and content['settings']['end_date'] and content['settings']['end_date'] != '' %}
+        {% set showIt = ("now"|date > content['settings']['start_date'] and "now"|date < content['settings']['end_date']) %}
+    {% elseif content['settings']['start_date'] and content['settings']['start_date'] != '' %}
+        {% set showIt = ("now"|date > content['settings']['start_date']) %}
+    {% endif %}
+
+    {% if showIt %}
+        <div class="platform-banner" id="block{{ content['block_id'] }}">
+            {% if content['settings']['link'] %}<a href="{{ content['settings']['link'] }}">{% endif %}
+            <img src="{{ content['settings']['image'] }}" alt="{{ getFunction('getCurrentChannel').name }}">
+            {% if content['settings']['link'] %}</a>{% endif %}
+        </div>
+    {% endif %}
+{% endif %}

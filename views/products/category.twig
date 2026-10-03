@@ -1,0 +1,78 @@
+
+{% extends "layout/main.twig" %}
+{% block title %}{{ category.name ?? 'المنتجات' }}{% endblock %}
+{% block main_content %}
+
+    <div class="breadcrumb"><a href="/">الرئيسية</a>{% if category %} / {{ category.name }}{% endif %}</div>
+
+    {% if category and category.image %}
+        <div class="cat-hero">
+            <img src="{{ category.image_url }}" alt="{{ category.name }}">
+            <div class="ov"><div class="wrap"><h1>{{ category.name }}</h1>{% if category.description %}<span>{{ category.description|striptags }}</span>{% endif %}</div></div>
+        </div>
+    {% endif %}
+
+    <div class="cat-body" {% if category.display_mode == 'description_only' %}style="grid-template-columns:1fr;"{% endif %}>
+        {% if category.display_mode != 'description_only' %}
+            <aside class="filters">
+                <h4>تصفية النتائج</h4>
+                <div class="frow">
+                    <div>نطاق السعر</div>
+                    <div class="range-fake"></div>
+                </div>
+            </aside>
+        {% endif %}
+        <div>
+            {% include 'products/list/grid.twig' with {'product': product, sorter: true} %}
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block footer_scripts %}
+<script>
+    var page = 1;
+    var limit = 7;
+    var start = 0;
+    var action = 'inactive';
+    var sort = (new URL(location.href)).searchParams.get('sort');
+    var order = (new URL(location.href)).searchParams.get('order');
+
+    url_query = "?page="+page;
+    if (sort) { url_query += "&sort="+sort; }
+    if (order) { url_query += "&order="+order; }
+    url_path = "{{ route('shop.productOrCategory.load', '') }}"+"/{{ category['url_path'] ?? '' }}"+url_query;
+
+    $(window).on('load', function() {
+        $(".s-products-list-loading-wrapper").show();
+        $.ajax({
+            url: url_path, type: "GET", cache: false,
+            success: function(resp) {
+                if (resp.success == true) { $('#load_data').append(resp.html); action = 'inactive'; }
+                $(".s-products-list-loading-wrapper").hide();
+            },
+        });
+    });
+
+    $(window).scroll(function(){
+        if ($(window).scrollTop() + $(window).height() > $("#load_data").height() && action == 'inactive') {
+            action = 'active';
+            var sort = (new URL(location.href)).searchParams.get('sort');
+            var order = (new URL(location.href)).searchParams.get('order');
+            page = page + 1;
+            $(".s-products-list-loading-wrapper").show();
+            url_query = "?page="+page;
+            if (sort) { url_query += "&sort="+sort; }
+            if (order) { url_query += "&order="+order; }
+            url_path = "/load-more"+"/{{ category.url_path ?? '' }}"+url_query;
+            $.ajax({
+                url: url_path, type: "GET", cache: false,
+                success: function(resp) {
+                    if (resp.success == true) { $('#load_data').append(resp.html); action = 'inactive'; }
+                    $(".s-products-list-loading-wrapper").hide();
+                },
+            });
+        }
+    });
+</script>
+{% endblock %}

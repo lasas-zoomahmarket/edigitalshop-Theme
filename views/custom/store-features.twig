@@ -1,0 +1,11 @@
+{# شريط الثقة — المحتوى (الأيقونة/العنوان/الوصف) قابل للتعديل من لوحة تحكم توسّع: الصفحة الرئيسية ← مزايا المتجر #}
+<div class="trust-strip">
+    <div class="trust-inner" style="grid-template-columns:repeat({{ content['settings']['items']|length }},1fr);">
+        {% for item in content['settings']['items'] %}
+            <div class="trust-item">
+                <div class="ic"><i class="{{ item['icon'] }}"></i></div>
+                <div><b>{{ item['main_title'] }}</b><span>{{ item['sub_title'] }}</span></div>
+            </div>
+        {% endfor %}
+    </div>
+</div>

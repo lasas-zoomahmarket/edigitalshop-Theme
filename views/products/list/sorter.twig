@@ -1,0 +1,13 @@
+<div class="sortbox">
+    <div class="dropdown-toggle">↕ {{ ('shop::app.products.sort-by'|trans) }}<i class="icon-caret-down"></i></div>
+    <div class="dropdown-list bottom-left dropdown-links" style="display:none;">
+        <ul>
+            <li><a href="?sort=name&amp;order=asc">{{ ('shop::app.products.from-a-z'|trans) }}</a></li>
+            <li><a href="?sort=name&amp;order=desc">{{ ('shop::app.products.from-z-a'|trans) }}</a></li>
+            <li><a href="?sort=created_at&amp;order=desc">{{ ('shop::app.products.newest-first'|trans) }}</a></li>
+            <li><a href="?sort=created_at&amp;order=asc">{{ ('shop::app.products.oldest-first'|trans) }}</a></li>
+            <li><a href="?sort=price&amp;order=asc">{{ ('shop::app.products.cheapest-first'|trans) }}</a></li>
+            <li><a href="?sort=price&amp;order=desc">{{ ('shop::app.products.expensive-first'|trans) }}</a></li>
+        </ul>
+    </div>
+</div>

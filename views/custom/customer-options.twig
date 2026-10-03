@@ -1,0 +1,21 @@
+{# آراء العملاء — تقييمات حقيقية من عملاء المتجر (لوحة تحكم توسّع: الصفحة الرئيسية ← تقييمات العملاء) #}
+<div class="theme-section" style="padding-top:0;">
+    <div class="theme-section-head"><h2>{{ content['setting']['customer_options'] ?: 'آراء عملائنا' }}</h2></div>
+    <div class="testi-grid" id="block{{ content['block_id'] }}">
+        {% for review in content['settings']['reviews'] %}
+            <div class="testi-card">
+                <div class="stars">
+                    {% for i in 0..4 %}{{ review['rating'] > i ? '★' : '☆' }}{% endfor %}
+                </div>
+                <p>"{{ review['comment'] }}"</p>
+                <div class="testi-who">
+                    <div class="av">{{ review['name']|default('ع')|slice(0,1) }}</div>
+                    <div>
+                        <b>{% if content['settings']['hide_user'] != 'true' %}{{ review['name'] }}{% else %}عميل موثّق{% endif %}</b>
+                        <span>عميل موثّق</span>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>

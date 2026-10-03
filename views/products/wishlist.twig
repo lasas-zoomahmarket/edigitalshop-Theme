@@ -1,0 +1,17 @@
+{% if authUser %}
+    <form action="{{ route('customer.wishlist.add', product.product_id) }}" method="GET">
+        {{ csrf_field }}
+        <input type="hidden" name="product_id" value="{{ product.product_id }}">
+        <button type="submit"
+            {% if product.wishlist_product %}
+                class="border-0 btn fa-solid fa-heart"
+                title="{{ ('app.customer.account.wishlist.remove-wishlist-text'|trans) }}"
+            {% else %}
+                class="border-0 btn"
+                title="{{ ('app.customer.account.wishlist.add-wishlist-text'|trans) }}"            
+            {% endif %}
+            id="wishlist-changer">
+            <i class="icon-heart"></i>
+        </button>
+    </form>
+{% endif %}

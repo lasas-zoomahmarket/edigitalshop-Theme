@@ -1,0 +1,4 @@
+{# views/home/products-list.twig — نفس تصميم البطاقة سواء شبكة أو سلايدر (الفرق فقط بكلاس الحاوية الأب: scrollrow/prod-row من home/index.twig) #}
+{% for product in products %}
+    {% include 'products/list/card.twig' with {'product': product} %}
+{% endfor %}

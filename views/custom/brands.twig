@@ -1,0 +1,14 @@
+{# الماركات/الشركاء — لو فعّلها حزم من لوحة تحكم توسّع #}
+<div class="theme-section" style="padding-top:0;">
+    {% if content['setting']['brands_title'] %}
+        <div class="theme-section-head"><h2>{{ content['setting']['brands_title'] }}</h2></div>
+    {% endif %}
+    <div class="scrollrow" id="block{{ content['block_id'] }}">
+        {% for brand in content['settings']['brands'] %}
+            <div style="min-width:140px;flex-shrink:0;background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;">
+                <img src="{{ storage_url ~ brand['logo'] }}" style="height:46px;width:auto;margin:0 auto 8px;object-fit:contain;">
+                <div style="font-size:12.5px;font-weight:700;color:var(--navy-900);">{{ brand['name'] }}</div>
+            </div>
+        {% endfor %}
+    </div>
+</div>

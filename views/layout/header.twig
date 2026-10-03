@@ -1,0 +1,114 @@
+<header>
+    <div class="header-container">
+        <div class="header-row-one">
+
+            {# ===== الشعار (channel.logo الحقيقي من لوحة تحكم توسّع) ===== #}
+            {% set channel = getFunction('getCurrentChannel') %}
+            <div class="store-logo top-links-2">
+                <a href="/">
+                    {% if channel and channel.logo %}
+                        <img src="{{ storage_url ~ channel.logo }}" class="logo" alt="{{ channel.name }}">
+                    {% else %}
+                        <h1>{{ channel.name }}</h1>
+                    {% endif %}
+                </a>
+            </div>
+
+            {# ===== البحث + اللغة/العملة + السلة + المحفظة (كل المنطق الحقيقي محفوظ، فقط بتصميم جديد) ===== #}
+            <ul class="top-links top-links-1">
+                <li>
+                    <div>
+                        <div class="dropdown-toggle">
+                            <span class="top-links-icon top-links-locale"><i class="icon-world">🌐</i></span>
+                        </div>
+                        <div class="dropdown-list bottom-left dropdown-links" style="display: none;">
+                            <ul>
+                                {% for locale in getFunction('getAllLocales') %}
+                                    <li><a href="?locale={{ locale.code }}">{{ locale.name }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <div class="dropdown-toggle">
+                            <span class="top-links-icon top-links-locale"><i class="icon-flag">💱</i></span>
+                        </div>
+                        <div class="dropdown-list bottom-left dropdown-links" style="display: none;">
+                            <ul>
+                                {% for currency in getFunction('getActiveChannelCurrency') %}
+                                    <li><a href="?currency={{ currency.code }}" class="{{ currency.company_id }} {{ currency.id }}">{{ currency.code }} {{ currency.symbol }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="dropdown-toggle top-links-icon top-links-search">
+                        <i class="icon-magnifying-glass">🔍</i>
+                    </div>
+                    <div class="dropdown-list bottom-left popper-tooltip" style="display: none;">
+                        <div class="ui search">
+                            <span class="cam-ic" title="{{ ('shop::app.header.search-text'|trans) }}">📷</span>
+                            <input type="text" placeholder="{{ ('shop::app.header.search-text'|trans) }}" value="" class="prompt search-box" autocomplete="off">
+                            <i class="notch-loader gray search-loader" style="display: none;"></i>
+                            <div class="results"></div>
+                        </div>
+                    </div>
+                </li>
+                <li class="cart-dropdown-container has-counter">
+                    <a href="/checkout/cart">
+                        <span class="top-links-icon top-links-cart">
+                            🛒
+                            <span class="count-wrapper cart-count count">{{ getFunction('cartItemsCount') }}</span>
+                        </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/customer/account/wallet">
+                        <span class="top-links-icon top-links-cart">💰
+                            <span class="wallet-wrapper">{{ getFunction('customerWallet') | default('0') | raw }}</span>
+                        </span>
+                    </a>
+                </li>
+                <li>
+                    <div>
+                        <div
+                            {% if authUser %}
+                                class="dropdown-toggle"
+                            {% else %}
+                                data-toggle="modal" data-target="#customerLoginModal"
+                            {% endif %}>
+                            <span class="top-links-icon top-links-account">👤</span>
+                        </div>
+                        {% if authUser %}
+                            <ul class="dropdown-list bottom-right customer-dropdown dropdown-links">
+                                <li class="no-link">{{ authUser.first_name }}</li>
+                                <li><a href="/customer/account/notifications">🔔 {{ ('shop::app.header.notifications'|trans) }}</a></li>
+                                <li><a href="/customer/account/profile">👤 {{ ('shop::app.header.profile'|trans) }}</a></li>
+                                <li><a href="/customer/account/wishlist">♡ {{ ('shop::app.header.wishlist'|trans) }}</a></li>
+                                <li><a href="/customer/account/orders">📦 {{ ('shop::app.header.orders'|trans) }}</a></li>
+                                <li><a href="/customer/account/cart">🛒 {{ ('shop::app.header.cart'|trans) }}</a></li>
+                                <hr />
+                                <li><a href="/customer/account/logout">↪️ {{ ('shop::app.header.logout'|trans) }}</a></li>
+                            </ul>
+                        {% endif %}
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="primary-menu">
+            <div>
+                {# روابط ثابتة من هوية المتجر + القائمة الحقيقية للفئات (تحمَّل تلقائيًا بالـ AJAX من نفس المنصة) #}
+                <div class="static-nav">
+                    <a href="/" class="{{ (path is defined and path == '/') ? 'current' : '' }}">الرئيسية</a>
+                    <a href="/products">المنتجات</a>
+                    <a href="/تخفيضات">تخفيضات</a>
+                </div>
+                {% include 'layout/navbar.twig' %}
+            </div>
+        </div>
+    </div>
+</header>

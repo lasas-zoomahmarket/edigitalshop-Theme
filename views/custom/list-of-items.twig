@@ -1,0 +1,16 @@
+{# "تصفح حسب القسم" / تايلات مخصصة — بيانات كاملة (صورة/اسم/رابط) من لوحة تحكم توسّع: الصفحة الرئيسية ← قائمة عناصر #}
+<div class="theme-section" {{ content['settings']['title'] ? '' : 'style="padding-top:0;"' }}>
+    {% if content['settings']['title'] %}
+        <div class="theme-section-head"><h2>{{ content['settings']['title'] }}</h2></div>
+    {% endif %}
+    <div class="cat-grid" id="block{{ content['block_id'] }}" style="grid-template-columns:repeat({{ content['settings']['items']|length > 5 ? 5 : content['settings']['items']|length }},1fr);">
+        {% for item in content['settings']['items'] %}
+            <a class="cat-card" href="{{ item['link'] ?? '#' }}">
+                <img src="{{ item['image'] }}" alt="{{ item['name'] }}">
+                {% if item['name'] %}
+                    <div class="ov"><span>{{ item['name'] }}</span></div>
+                {% endif %}
+            </a>
+        {% endfor %}
+    </div>
+</div>

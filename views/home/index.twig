@@ -1,0 +1,122 @@
+
+{% extends "layout/main.twig" %}
+
+{% block title %}{{ getFunction('getCurrentChannel').name }}{% endblock %}
+
+{% block main_content %}
+    <div class="home">
+
+        {# ===== Hero ثابت بهوية المتجر (لا يوجد block مخصص له بلوحة تحكم توسّع — المحتوى الديناميكي الحقيقي كله بالأسفل) ===== #}
+        <div class="theme-hero">
+            <div class="hero-inner">
+                <div>
+                    <div class="hero-eyebrow">✨ أكثر من 2000 عميل راضٍ</div>
+                    <h1>حوّل بياناتك إلى <span>قرارات ذكية</span><br>خلال دقائق</h1>
+                    <p>قوالب ولوحات تحكم إكسل جاهزة للأعمال، المالية، والموارد البشرية — بتصميم احترافي ومعاينة واضحة قبل الشراء.</p>
+                    <div class="hero-ctas">
+                        <a href="/products" class="theme-btn btn-gold">تصفح القوالب ←</a>
+                        <a href="#" class="theme-btn btn-outline-light">🎬 شاهد نموذج ديمو</a>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="stat"><b>116+</b><span>قالب احترافي</span></div>
+                        <div class="stat"><b>4.9★</b><span>تقييم العملاء</span></div>
+                        <div class="stat"><b>2000+</b><span>عميل سعودي وخليجي</span></div>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="glow"></div>
+                    <div class="card"><img src="{{ asset_url }}img/p_fin_dashboard.jpg" alt="لوحة تحكم مالية"></div>
+                    <div class="hero-floatcard"><div class="dot">📊</div> لوحة تفاعلية جاهزة للاستخدام</div>
+                </div>
+            </div>
+        </div>
+
+        {# ===== من هنا وبالأسفل: كل قسم مرتبط بمحتوى حقيقي قابل للتعديل من لوحة تحكم توسّع ===== #}
+        {% for content in homeContent %}
+        {# <pre>{{ dump(content['settings']) }}</pre> #}
+
+            {% if (('fixed_banner' == content['slug'] or 'wide_banner' == content['slug']) and content['settings']['image'] ) %}
+                {% include 'custom/bold-banner.twig' with {'content': content} %}
+            {% endif %}
+
+            {% if ('youtube' == content['slug'] and content['settings']['youtube_url'] ) %}
+                {% include 'custom/video.twig' with {'content': content} %}
+            {% endif %}
+
+            {% if ('customer_options' == content['slug']) %}
+                {% include 'custom/customer-options.twig' with {'content': content} %}
+            {% endif %}
+
+            {% if ('store_features' == content['slug']) %}
+                {% include 'custom/store-features.twig' with {'content': content} %}
+            {% endif %}
+
+            {% if ('brands' == content['slug']) %}
+                {% include 'custom/brands.twig' with {'content': content} %}
+            {% endif %}
+
+            {% if ('list_of_items' == content['slug']) %}
+                {% if ('slider' == content['settings']['type']) %}
+                    {% include 'custom/list-of-items-slider.twig' with {'content': content} %}
+                {% else %}
+                    {% include 'custom/list-of-items.twig' with {'content': content} %}
+                {% endif %}
+            {% endif %}
+
+            {% if ('fixed_products' == content['slug']) %}
+                <div class="theme-section load-products" style="padding-bottom:0;"
+                     data-id="{{ content['block_id'] }}"
+                     data-title="{{ content['settings']['products_title'] }}"
+                     data-link="{{ content['settings']['link'] is not empty ? content['settings']['link'] : '/products' }}"
+                     data-products="{{ content['settings']['products'] }}"
+                     data-limit="{{ content['settings']['limit'] }}"
+                     data-ids="{{ content['settings']['ids'] }}"
+                     data-type="{{ content['settings']['type'] }}">
+                    <div class="theme-section-head">
+                        <h2>{{ content['settings']['products_title'] }}</h2>
+                        {% if content['settings']['link'] is not empty %}
+                            <a class="viewall" href="{{ content['settings']['link'] }}">عرض الكل ←</a>
+                        {% endif %}
+                    </div>
+                    <div class="products-slot {{ content['settings']['type'] == 'slider' ? 'scrollrow' : 'prod-row' }}"></div>
+                </div>
+            {% endif %}
+
+        {% endfor %}
+
+        {# ===== بند ثابت: فيديو تعريفي عن طريقة معاينة القوالب (لا يوجد له block بلوحة التحكم) ===== #}
+        <div class="theme-section" style="padding-top:0;">
+            <div class="videoband">
+                <div><h3>🔍 عاين القالب قبل ما تشتري</h3><p>كل قالب له طريقة معاينة تناسبه — فيديو شرح، ملف PDF، أو Google Sheet حسب نوعه — عشان تتأكد إنه يناسبك قبل القرار، وبعد الشراء تحمّله فورًا وتبدأ تستخدمه.</p></div>
+                <a href="/products" class="theme-btn btn-gold">تصفح القوالب ←</a>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block footer_scripts %}
+    <script>
+        $(document).ready(function () {
+            $('.load-products').each(function () {
+                let block = $(this);
+                let blockId = block.data('id');
+                let blockType = block.data('type');
+                let blockLimit = block.data('limit');
+                let slot = block.find('.products-slot');
+
+                $.ajax({
+                    url: '/fetch-home-products',
+                    method: 'GET',
+                    data: { id: blockId, type: blockType, limit: blockLimit },
+                    success: function (response) {
+                        slot.html(response);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("AJAX Error: " + error);
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

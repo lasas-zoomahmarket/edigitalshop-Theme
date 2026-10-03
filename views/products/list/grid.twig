@@ -1,0 +1,8 @@
+
+<div class="cat-toolbar">
+    <span class="s-products-list-loading-wrapper" style="display:none;">⏳ جاري التحميل...</span>
+    {% if sorter == true %}
+        {% include 'products/list/sorter.twig' %}
+    {% endif %}
+</div>
+<div id="load_data" class="cat-grid-prod"></div>

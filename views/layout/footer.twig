@@ -1,0 +1,127 @@
+{% set channel = getFunction('getCurrentChannel') %}
+{% set companyTax = getFunction('getCompanyTax') %}
+{% set company = channel['getCompanyAddress'] %}
+
+<footer class="footer">
+    <div class="footer-main">
+        <div class="container">
+            <div class="footer-inner-grid" style="display:grid;grid-template-columns:1.4fr 1fr 1fr 1.1fr;gap:34px;padding-bottom:20px;">
+
+                <div class="footer-item">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+                        {% if channel and channel.logo %}
+                            <img src="{{ storage_url ~ channel.logo }}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+                        {% endif %}
+                        <span style="color:#fff;font-weight:800;font-size:16px;">{{ channel.name }}</span>
+                    </div>
+                    <p>{{ channel.description }}</p>
+                    <div class="store-contact">
+                        {% if company.whatsapp %}
+                            <a href="https://wa.me/{{ company.whatsapp|replace({'~[^+0-9]~': ''}) }}" rel="nofollow" style="direction:ltr" target="_blank">
+                                💬 {{ ('admin::app.customers.customers.whatsapp'|trans) ?: 'واتساب' }}
+                            </a>
+                        {% endif %}
+                        {% if company.phone_visibility == 0 and company.phone %}
+                            <a href="tel:{{ company.phone }}">📞 {{ company.phone }}</a>
+                        {% endif %}
+                        {% if company.email %}
+                            <a href="mailto:{{ company.email }}">✉️ {{ company.email }}</a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="footer-item">
+                    {% if channel.getCmsPages|length > 0 %}
+                        <h2 class="footer-title"><span>روابط مهمة</span></h2>
+                        <ul class="footer-links">
+                            {% if channel.getBlogs|length > 0 %}
+                                <li><a href="/blogs/{{ company.company_id }}">المدونة</a></li>
+                            {% endif %}
+                            {% for page in channel.getCmsPages %}
+                                {% if page.status == 1 %}
+                                    <li><a href="/page/{{ page.url_key }}">{{ page.page_title }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+
+                <div class="footer-item">
+                    <h2 class="footer-title"><span>الأقسام</span></h2>
+                    <ul class="nav category-navbar" id="cat-here-footer"></ul>
+                    <script>
+                        $(document).ready(function(){
+                            $.ajax({ url:'/category', type:'GET', success:function(r){ $('#cat-here-footer').html(r.html || r); } });
+                        });
+                    </script>
+                </div>
+
+                <div class="footer-item">
+                    <h2 class="footer-title"><span>{{ ('admin::app.front.contact_us'|trans) ?: 'تواصل معنا' }}</span></h2>
+                    <ul class="social">
+                        {% if company.instagram %}<li class="social__item"><a href="https://www.instagram.com/{{ company.instagram }}" target="_blank">📷</a></li>{% endif %}
+                        {% if company.twitter %}<li class="social__item"><a href="https://twitter.com/{{ company.twitter }}" target="_blank">🐦</a></li>{% endif %}
+                        {% if company.snapchat %}<li class="social__item"><a href="https://www.snapchat.com/add/{{ company.snapchat }}" target="_blank">👻</a></li>{% endif %}
+                        {% if company.tiktok %}<li class="social__item"><a href="https://www.tiktok.com/{{ company.tiktok }}/" target="_blank">🎵</a></li>{% endif %}
+                        {% if company.youtube %}<li class="social__item"><a href="{{ company.youtube }}" target="_blank">▶️</a></li>{% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        {# شريط الثقة: دفع آمن عبر توسّع + وثيقة العمل الحر (من بيانات الشركة الحقيقية) #}
+        <div class="container" style="max-width:1280px;margin:0 auto;padding:18px 0;display:flex;gap:28px;flex-wrap:wrap;justify-content:center;border-top:1px solid rgba(255,255,255,.08);">
+            <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:#9fb0c9;font-weight:600;">🛡️ منصة توسّع الموثوقة</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:#9fb0c9;font-weight:600;">💳 طرق دفع آمنة 100%</div>
+            {% if company.certificate_id %}
+                <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:#9fb0c9;font-weight:600;">🪪 وثيقة العمل الحر</div>
+            {% endif %}
+        </div>
+
+        <div class="container mt-25">
+            <div class="col-md-6">
+                {% if getConfig('config.general.show-platform-message') == 0 %}
+                    <p class="copyright">{{ ('admin::app.footer.right-reserved'|trans) ?: 'جميع الحقوق محفوظة' }} {{ "now"|date("Y") }} | {{ channel.name }}</p>
+                {% else %}
+                    <p class="copyright">{{ ('admin::app.footer.twsaa-reserved'|trans) ?: 'جميع الحقوق محفوظة' }} {{ "now"|date("Y") }} | {{ channel.name }}</p>
+                {% endif %}
+            </div>
+            <div class="col-md-6">
+                <div class="icons">
+                    {% if companyTax and (companyTax.show_tax_no|default(0)) == 1 %}
+                        <div class="store-certificate">{{ ('admin::app.footer.tax_no'|trans) ?: 'الرقم الضريبي' }}: <b>{{ companyTax.tax_no ?? '' }}</b></div>
+                    {% endif %}
+                    {% if getFunction('getDefaultPaymentMethod').getAdminPaymentMethod and getFunction('getDefaultPaymentMethod').getAdminPaymentMethod['active']|default(0) == 1 %}
+                        <img src="https://twsaa.com/admin-themes/mbotiq/assets/images/payments/visa.png" alt="visa">
+                        <img src="https://twsaa.com/admin-themes/mbotiq/assets/images/payments/mastercard.png" alt="mastercard">
+                        {% if getSuperConfig('store.current_country_code') != "OM" %}
+                            <img src="https://twsaa.com/admin-themes/mbotiq/assets/images/payments/mada.png" alt="mada">
+                            <img src="https://twsaa.com/admin-themes/mbotiq/assets/images/payments/applepay.png" alt="applepay">
+                        {% endif %}
+                    {% endif %}
+                    {% if getFunction('getInstallmentPaymentMethod').getAdminPaymentMethod and getFunction('getInstallmentPaymentMethod').getAdminPaymentMethod['active']|default(0) == 1 %}
+                        <img src="https://twsaa.com/admin-themes/mbotiq/assets/images/payments/cod.png" alt="cod">
+                    {% endif %}
+                    {% if (getFunction('getTabbyPaymentMethod') and getFunction('getTabbyPaymentMethod').active|default(0)) == 1 and (getFunction('getTabbyPaymentMethod').getAdminPaymentMethod['active']|default(0)) == 1 %}
+                        <img src="https://twsaa.com/admin-themes/mbotiq/assets/images/payments/tabby.webp" alt="tabby">
+                    {% endif %}
+                    {% if (getFunction('getTamaraPaymentMethod') and getFunction('getTamaraPaymentMethod').active|default(0)) == 1 and (getFunction('getTamaraPaymentMethod').getAdminPaymentMethod['active']|default(0)) == 1 %}
+                        <img src="https://twsaa.com/admin-themes/mbotiq/assets/images/payments/tamara.svg" alt="tamara">
+                    {% endif %}
+                    {% if company.certificate_id %}
+                        {% if getSuperConfig('store.current_country_code') == "OM" %}
+                            <a target="_blank" href="https://maroof.om/businesses?keyword={{ company.certificate_id }}"><img src="https://twsaa.com/admin-themes/mbotiq/assets/images/payments/sbc.webp" alt="value added tax" loading="lazy"></a>
+                        {% else %}
+                            <a target="_blank" href="https://eauthenticate.saudibusiness.gov.sa/certificate-details/{{ company.certificate_id }}"><img src="https://twsaa.com/admin-themes/mbotiq/assets/images/payments/sbc.webp" alt="value added tax" loading="lazy"></a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {# "صُنع بإتقان على منصة توسّع" — إعدادات المتجر ← خيارات المتجر ← الخيارات العامة (مفعّلة عندك بالمنصة) #}
+        {% if getConfig('config.general.show-platform-message') != 0 %}
+            <div class="made-with">صُنع بإتقان على منصة <b>توسّع</b></div>
+        {% endif %}
+    </div>
+</footer>
